@@ -1,0 +1,47 @@
+---
+
+# fail when distribution is not supported
+
+- name: check if distribution is supported
+  fail: msg="'{{ ansible_distribution }}' is not supported by this role"
+  when: ansible_distribution not in ["Gentoo"]
+
+
+# run os specific tasks
+
+- include: gentoo/main.yml
+  when: ansible_distribution == "Gentoo"
+
+
+# secure up mysql instance
+
+- name: check for current hostname
+  command: hostname
+  register: current_hostname
+  changed_when: false
+
+- name: ensure default databases were not present
+  mysql_db: name="{{ item }}" state="absent" login_user="root" login_password="{{ mysql_root_password }}"
+  with_items:
+    - "test"
+
+- name: ensure default users were not present
+  mysql_user: name="{{ item.name }}" host="{{ item.host }}" state="absent" login_user="root" login_password="{{ mysql_root_password }}"
+  with_items:
+    - { name: "",                 host: "localhost" }
+    - { name: "",                 host: "{{ current_hostname.stdout }}" }
+    - { name: "root",             host: "::1" }
+    - { name: "root",             host: "{{ current_hostname.stdout }}" }
+
+
+# configure mysql instance
+
+- name: write default configuration
+  become: yes
+  ini_file: dest="/etc/mysql/my.cnf"
+            section="{{ item.section }}"
+            option="{{ item.option }}"
+            value="{{ item.value }}"
+            state="{{ item.state | default('present') }}"
+  with_items: "{{ mysql_config_default }}"
+  notify: mysql - restart

@@ -1,0 +1,36 @@
+---
+
+# install mysql
+
+- name: install mysql server
+  become: yes
+  portage: package="dev-db/mysql" state="present" newuse=yes update=yes
+  register: mysql_install_state
+
+- name: install python mysqldb module
+  become: yes
+  portage: package="dev-python/mysql-python" state="present" newuse=yes update=yes
+
+
+# configure mysql
+
+- name: set root user password
+  become: yes
+  ini_file: dest="/root/.my.cnf" section="client" option="password" value="{{ mysql_root_password }}"
+
+- name: check for mysql version
+  shell: "emerge -pv dev-db/mysql | grep 'dev-db/mysql' | awk '{print $4}'"
+  register: mysql_install_version
+  when: mysql_install_state.changed
+
+- name: configure mysql instance (run only once after installation)
+  become: yes
+  command: "emerge --config ={{ mysql_install_version.stdout }}"
+  when: mysql_install_state.changed
+
+
+# start mysql service
+
+- name: ensure mysql is running
+  become: yes
+  service: name="mysql" state="started" enabled=yes
