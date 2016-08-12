@@ -28,6 +28,11 @@
   command: "emerge --config ={{ mysql_install_version.stdout }}"
   when: mysql_install_state.changed
 
+- name: delete log-bin config entry
+  become: yes
+  lineinfile: dest=/etc/mysql/my.cnf state=absent regexp="^log-bin"
+  when: mysql_install_state.changed
+
 
 # start mysql service
 
