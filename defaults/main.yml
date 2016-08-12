@@ -9,6 +9,4 @@ mysql_root_password: BRDMRJCNBYI8
 mysql_config_default:
   - { section: "mysqld",      option: "bind-address",          value: "0.0.0.0" }
   - { section: "mysqld",      option: "innodb_log_file_size",  value: "5M" }
-  - { section: "mysqld",      option: "log-bin",               value: "/var/log/mysql/mysql-bin.log", state: "present" }
-  - { section: "mysqld",      option: "log-bin",               value: "/var/log/mysql/mysql-bin.log", state: "absent" }
   - { section: "mysqldump",   option: "max_allowed_packet",    value: "100M" }
