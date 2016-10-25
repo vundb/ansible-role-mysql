@@ -1,5 +1,19 @@
 ---
 
+# install latest perl
+
+- include: ../../../portage/tasks/gentoo/main.yml
+  vars:
+    portage_configuration:
+      - section: "package.mask"
+        file: "perl"
+        entries:
+          - "<dev-lang/perl-5.22.0"
+    portage_packages:
+      - { package: "virtual/perl-Test-Harness" }
+      - { package: "dev-lang/perl" }
+
+
 # install mysql
 
 - name: install mysql server
