@@ -30,7 +30,12 @@
 
 - name: set root user password
   become: yes
-  ini_file: dest="/root/.my.cnf" section="client" option="password" value="{{ mysql_root_password }}"
+  ini_file:
+    dest: "/root/.my.cnf"
+    section: "client"
+    option: "password"
+    value: "{{ mysql_root_password }}"
+    create: yes
 
 - name: check for mysql version
   shell: "emerge -pv dev-db/mysql | grep 'dev-db/mysql' | awk '{print $4}'"
