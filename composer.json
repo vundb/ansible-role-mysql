@@ -14,6 +14,6 @@
     "vundb/ansible-role-portage": "1.0.*"
   },
   "extra": {
-    "installer-name": "mysql"
+    "installer-name": "vundb-mysql"
   }
 }
