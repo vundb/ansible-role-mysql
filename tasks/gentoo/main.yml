@@ -6,7 +6,7 @@
   vars:
     portage_configuration: []
     portage_packages:
-      - { package: "dev-lang/perl" stage: "unmerged" }
+      - { package: "dev-lang/perl", state: "unmerged" }
       - { package: "dev-lang/perl" }
 
 
