@@ -7,6 +7,12 @@
   when: ansible_distribution not in ["Gentoo"]
 
 
+# set facts
+
+- set_fact:
+    mysql_config_merged: "{{ mysql_config_default | union(mysql_config) }}"
+
+
 # run os specific tasks
 
 - include: gentoo/main.yml
@@ -43,5 +49,5 @@
             option="{{ item.option }}"
             value="{{ item.value }}"
             state="{{ item.state | default('present') }}"
-  with_items: "{{ mysql_config_default }}"
+  with_items: "{{ mysql_config_merged }}"
   notify: mysql - restart

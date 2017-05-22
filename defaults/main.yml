@@ -4,9 +4,11 @@
 mysql_root_password: BRDMRJCNBYI8
 
 #
-# Default mysql configuration to be written to /etc/mysql/my.cnf
+# Custom MySQL configuration to be written to /etc/mysql/my.cnf
 #
-mysql_config_default:
-  - { section: "mysqld",      option: "bind-address",          value: "0.0.0.0" }
-  - { section: "mysqld",      option: "innodb_log_file_size",  value: "5M" }
-  - { section: "mysqldump",   option: "max_allowed_packet",    value: "100M" }
+# mysql_config:
+#   - { section: "mysqld",    option: "bind-address",         value: "127.0.0.1" }
+#   - { section: "mysqld",    option: "innodb_log_file_size", value: "5M" }
+#   - { section: "mysqldump", option: "max_allowed_packet",   value: "100M" }
+#
+mysql_config: []
