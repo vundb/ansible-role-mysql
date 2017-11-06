@@ -1,25 +1,25 @@
 ---
 
-# install latest perl
+# rebuild required packages
 
-- include: ../../../vundb-portage/tasks/gentoo/main.yml
+- import_tasks: ../../../vundb-portage/tasks/gentoo/main.yml
   vars:
     portage_configuration: []
     portage_packages:
-      - { package: "dev-lang/perl", state: "unmerged" }
-      - { package: "dev-lang/perl" }
+      - { package: "sys-libs/zlib", state: "unmerged" }
+      - { package: "sys-libs/zlib", state: "emerged"  }
 
 
 # install mysql
 
 - name: install mysql server
   become: yes
-  portage: package="dev-db/mysql" state="present" newuse=yes update=yes
+  portage: package="dev-db/mysql" state=emerged newuse=yes update=yes
   register: mysql_install_state
 
 - name: install python mysqldb module
   become: yes
-  portage: package="dev-python/mysql-python" state="present" newuse=yes update=yes
+  portage: package="dev-python/mysql-python" state=emerged newuse=yes update=yes
 
 
 # configure mysql
@@ -38,6 +38,7 @@
   register: mysql_install_version
   when: mysql_install_state.changed
 
+# TODO: run this command only when mysql database file not exists
 - name: configure mysql instance (run only once after installation)
   become: yes
   command: "emerge --config ={{ mysql_install_version.stdout }}"
