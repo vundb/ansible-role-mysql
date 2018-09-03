@@ -21,7 +21,7 @@ Array with default mysql instance configuration. See
 Dependencies
 ------------
 
-[vundb/ansible-role-portage](https://github.com/vundb/ansible-role-portage)
+None.
 
 Example Playbook
 ----------------

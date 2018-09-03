@@ -2,4 +2,4 @@
 
 - name: mysql - restart
   become: yes
-  service: name="mysql" state="restarted"
+  service: name=mysql state=restarted
