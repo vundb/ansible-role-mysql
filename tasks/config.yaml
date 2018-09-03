@@ -1,0 +1,47 @@
+---
+
+# secure up mysql instance
+
+- name: check for current hostname
+  command: hostname
+  register: current_hostname
+  changed_when: false
+
+- name: ensure default databases are not present
+  mysql_db:
+    name: "{{ item }}"
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  with_items:
+    - test
+
+- name: ensure default users were not present
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host }}"
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  with_items:
+    - { name: "",     host: "localhost" }
+    - { name: "",     host: "{{ current_hostname.stdout }}" }
+    - { name: "root", host: "::1" }
+    - { name: "root", host: "{{ current_hostname.stdout }}" }
+
+
+# configure mysql instance
+
+- set_fact:
+    mysql_config_merged: "{{ mysql_config_default | union(mysql_config) }}"
+
+- name: write default configuration
+  become: yes
+  ini_file:
+    dest: /etc/mysql/my.cnf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    state: "{{ item.state | default('present') }}"
+  with_items: "{{ mysql_config_merged }}"
+  notify: mysql - restart
