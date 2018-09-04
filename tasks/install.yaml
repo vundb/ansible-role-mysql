@@ -8,6 +8,10 @@
   become: yes
   portage: package=dev-python/mysql-python state=emerged newuse=yes update=yes
 
+- name: check for fresh installation
+  stat: path=/var/lib/mysql
+  register: st
+
 - name: set root user password
   become: yes
   ini_file:
@@ -17,9 +21,14 @@
     value: "{{ mysql_root_password }}"
     create: yes
 
-- name: check for fresh installation
-  stat: path=/var/lib/mysql
-  register: st
+- name: fix directory permissions
+  become: yes
+  file:
+    path: "/var/run/mysqld"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0755
 
 - name: remove log-bin config entry
   become: yes
