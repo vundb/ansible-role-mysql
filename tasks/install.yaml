@@ -21,6 +21,11 @@
   stat: path=/var/lib/mysql
   register: st
 
+- name: remove log-bin config entry
+  become: yes
+  lineinfile: dest=/etc/mysql/my.cnf state=absent regexp="^log-bin"
+  when: not st.stat.exists
+
 - name: check for mysql version
   shell: emerge -pv dev-db/mysql | grep 'dev-db/mysql' | awk '{print $4}'
   register: version
@@ -30,11 +35,6 @@
 - name: configure mysql server
   become: yes
   command: "emerge --config ={{ version.stdout }}"
-  when: not st.stat.exists
-
-- name: remove log-bin config entry
-  become: yes
-  lineinfile: dest=/etc/mysql/my.cnf state=absent regexp="^log-bin"
   when: not st.stat.exists
 
 - name: ensure mysql is running
