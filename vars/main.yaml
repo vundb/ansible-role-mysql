@@ -12,3 +12,15 @@ mysql_config_default:
   - { section: "mysqld",    option: "bind-address",         value: "0.0.0.0" }
   - { section: "mysqld",    option: "innodb_log_file_size", value: "5M" }
   - { section: "mysqldump", option: "max_allowed_packet",   value: "100M" }
+
+
+#
+# Default mysql system user name
+#
+mysql_user: mysql
+
+
+#
+# Default mysql system group name
+#
+mysql_group: mysql

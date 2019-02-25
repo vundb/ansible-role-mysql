@@ -33,6 +33,12 @@
   command: "emerge --config dev-db/mysql"
   when: not st.stat.exists
 
+- name: remove log-bin config entry after installation
+  become: yes
+  lineinfile: dest=/etc/mysql/mysql.d/50-distro-server.cnf state=absent regexp="^log-bin"
+  when: not st.stat.exists
+  notify: mysql - restart
+
 - name: install python mysqldb module
   become: yes
   portage: package=dev-python/mysql-python state=emerged newuse=yes update=yes
