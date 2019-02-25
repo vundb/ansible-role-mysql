@@ -4,14 +4,6 @@
   become: yes
   portage: package=dev-db/mysql state=emerged newuse=yes update=yes
 
-- name: install python mysqldb module
-  become: yes
-  portage: package=dev-python/mysql-python state=emerged newuse=yes update=yes
-
-- name: check for fresh installation
-  stat: path=/var/lib/mysql
-  register: st
-
 - name: set root user password
   become: yes
   ini_file:
@@ -24,27 +16,32 @@
 - name: fix directory permissions
   become: yes
   file:
-    path: "/var/run/mysqld"
+    path: "{{ item }}"
     state: directory
-    owner: mysql
-    group: mysql
+    owner: "{{ mysql_user }}"
+    group: "{{ mysql_group }}"
     mode: 0755
+  with_items:
+    - /var/run/mysqld
 
-- name: remove log-bin config entry
-  become: yes
-  lineinfile: dest=/etc/mysql/my.cnf state=absent regexp="^log-bin"
-  when: not st.stat.exists
-
-- name: check for mysql version
-  shell: emerge -pv dev-db/mysql | grep 'dev-db/mysql' | awk '{print $4}'
-  register: version
-  changed_when: false
-  when: not st.stat.exists
+- name: check for fresh installation
+  stat: path=/var/lib/mysql
+  register: st
 
 - name: configure mysql server
   become: yes
-  command: "emerge --config ={{ version.stdout }}"
+  command: "emerge --config dev-db/mysql"
   when: not st.stat.exists
+
+- name: remove log-bin config entry after installation
+  become: yes
+  lineinfile: dest=/etc/mysql/mysql.d/50-distro-server.cnf state=absent regexp="^log-bin"
+  when: not st.stat.exists
+  notify: mysql - restart
+
+- name: install python mysqldb module
+  become: yes
+  portage: package=dev-python/mysql-python state=emerged newuse=yes update=yes
 
 - name: ensure mysql is running
   become: yes
